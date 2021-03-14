@@ -22,6 +22,11 @@
   <FILE>serial.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <start><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm</FILE><LINE>12</LINE></start>
+  <init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm</FILE><LINE>14</LINE></init>
+  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm</FILE><LINE>28</LINE></serial_init>
+  <main><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm</FILE><LINE>17</LINE></main>
+  <data><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm</FILE><LINE>51</LINE></data>
+  <loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm</FILE><LINE>21</LINE></loop>
+  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm</FILE><LINE>43</LINE></serial_transmit>
  </LABELS>
 </ASSEMBLER_INFO>

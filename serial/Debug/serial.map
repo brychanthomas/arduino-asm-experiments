@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm Sun Mar 14 18:42:16 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\serial\main.asm Sun Mar 14 22:17:51 2021
 
 
 EQU  SIGNATURE_000 0000001e
@@ -695,4 +695,9 @@ EQU  ACIaddr      0000002e
 EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
-CSEG start        00000001
+CSEG init         00000000
+CSEG serial_init  00000008
+CSEG main         00000001
+CSEG data         0000001c
+CSEG loop         00000003
+CSEG serial_transmit 00000015
