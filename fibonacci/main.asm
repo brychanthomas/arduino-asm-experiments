@@ -24,14 +24,14 @@ start:
 
 loop:
 	call calculate_next_term
-	cp r22, r20
+	cp r22, r20 ;if current term less than previous term, halt (overflow has occurred)
 	brlo halt
-	call output_term
+	call output_term ;output current term
 	ldi r19, 0x0d
-	call serial_transmit
+	call serial_transmit ;output carriage return
 	ldi r19, 0x0a
-	call serial_transmit
-	call delay_long
+	call serial_transmit ;output line feed
+	call delay_long ;delay for ~1 second
 	rjmp loop
 
 halt:
@@ -51,15 +51,15 @@ calculate_next_term:
 
 ;writes the value in r22 and r23 to serial as hexadecimal
 output_term:
-	mov r19, r22
-	andi r19, 0b11110000
-	swap r19
-	call output_hex
-	mov r19, r22
-	andi r19, 0b00001111
-	call output_hex
+	mov r19, r22 ;copy upper byte to r19
+	andi r19, 0b11110000 ;get top 4 bits
+	swap r19 ;move them to bottom four bits
+	call output_hex ;output as hex
+	mov r19, r22 ;copy most significant byte to r19
+	andi r19, 0b00001111 ;get bottom four bits
+	call output_hex ;output as hex
 
-	mov r19, r23
+	mov r19, r23 ;repeat above for lower byte
 	andi r19, 0b11110000
 	swap r19
 	call output_hex
@@ -70,21 +70,21 @@ output_term:
 
 ;output integer from 0 to 15 stored in r19 as hex
 output_hex:
-	ldi r18, 0x30
+	ldi r18, 0x30 ;if value < 10 add 0x30 to it to get to digits ascii range
 	cpi r19, 10
-	brlo less_than_nine
-	ldi r18, 0x41
-	subi r19, 10
-less_than_nine:
+	brlo less_than_ten
+	ldi r18, 0x41 ;if value >=10 add 0x41 to get to ABCDEF ascii range
+	subi r19, 10 ;and subtract 10
+less_than_ten:
 	add r19, r18
 	call serial_transmit
 	ret
 
 ;delay for around 0.02 seconds
 delay:
-	ldi r18, 1
+	ldi r18, 1 ;r18 counts to 256
 outerloop:
-	ldi r19, 1
+	ldi r19, 1 ;therefore r19 counts to 256, 256 times
 	inc r18
 	tst r18
 	breq end
@@ -99,7 +99,7 @@ end:
 
 ;delay for around 1 second
 delay_long:
-	ldi r17, 50
+	ldi r17, 50 ;call delay 50 times
 delay_long_loop:
 	call delay
 	dec r17
