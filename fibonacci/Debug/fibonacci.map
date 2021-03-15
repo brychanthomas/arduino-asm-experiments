@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm Mon Mar 15 19:21:07 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm Mon Mar 15 20:55:41 2021
 
 
 EQU  SIGNATURE_000 0000001e
@@ -696,8 +696,18 @@ EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
 CSEG start        00000000
-CSEG loop         00000006
-CSEG calculate_next_term 0000000d
-CSEG halt         0000000c
-CSEG serial_init  00000014
-CSEG serial_transmit 00000021
+CSEG serial_init  00000054
+CSEG loop         00000008
+CSEG calculate_next_term 00000018
+CSEG halt         00000017
+CSEG output_term  0000001f
+CSEG serial_transmit 00000061
+CSEG delay_long   0000004c
+CSEG output_hex   00000038
+CSEG less_than_nine 0000003d
+CSEG delay        00000041
+CSEG outerloop    00000042
+CSEG end          0000004b
+CSEG innerloop    00000046
+CSEG delay_long_loop 0000004d
+CSEG delay_long_end 00000053

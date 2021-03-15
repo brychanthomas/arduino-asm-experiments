@@ -23,10 +23,20 @@
  </OUTPUT_FILES>
  <LABELS>
   <start><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>9</LINE></start>
+  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>116</LINE></serial_init>
   <loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>21</LINE></loop>
-  <calculate_next_term><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>28</LINE></calculate_next_term>
-  <halt><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>25</LINE></halt>
-  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>40</LINE></serial_init>
-  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>55</LINE></serial_transmit>
+  <calculate_next_term><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>37</LINE></calculate_next_term>
+  <halt><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>33</LINE></halt>
+  <output_term><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>49</LINE></output_term>
+  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>131</LINE></serial_transmit>
+  <delay_long><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>103</LINE></delay_long>
+  <output_hex><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>74</LINE></output_hex>
+  <less_than_nine><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>80</LINE></less_than_nine>
+  <delay><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>86</LINE></delay>
+  <outerloop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>88</LINE></outerloop>
+  <end><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>99</LINE></end>
+  <innerloop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>93</LINE></innerloop>
+  <delay_long_loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>105</LINE></delay_long_loop>
+  <delay_long_end><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>111</LINE></delay_long_end>
  </LABELS>
 </ASSEMBLER_INFO>

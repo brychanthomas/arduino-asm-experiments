@@ -4,10 +4,14 @@
 ; Created: 15/03/2021 09:01:47
 ; Author : Brychan
 ;
+; Calculates the Fibonacci sequence and outputs each term over serial in
+; hexadecimal with a ~1 second delay between each. Only uses 16 bits to store
+; each term, so can only compute terms up to 46368 (0xB520), at which point
+; it halts.
 
 
 start:
-	;call serial_init
+	call serial_init
 
     ldi r20, 0 ;load 1 into prev term registers
 	ldi r21, 1
@@ -20,11 +24,20 @@ start:
 
 loop:
 	call calculate_next_term
-	call calculate_next_term
-	call calculate_next_term
-halt:
-	rjmp halt ;should see 00 03 00 05 in regs 20-23
+	cp r22, r20
+	brlo halt
+	call output_term
+	ldi r19, 0x0d
+	call serial_transmit
+	ldi r19, 0x0a
+	call serial_transmit
+	call delay_long
+	rjmp loop
 
+halt:
+	rjmp halt 
+
+;calculate next fibonacci term, store it in r22 and r23
 calculate_next_term:
 	mov r24, r22 ;copy current term into temp registers
 	mov r25, r23
@@ -35,6 +48,73 @@ calculate_next_term:
 	mov r20, r24 ;copy temp regiters into prev registers
 	mov r21, r25
 	ret
+
+;writes the value in r22 and r23 to serial as hexadecimal
+output_term:
+	mov r19, r22
+	andi r19, 0b11110000
+	lsr r19
+	lsr r19
+	lsr r19
+	lsr r19
+	call output_hex
+	mov r19, r22
+	andi r19, 0b00001111
+	call output_hex
+
+	mov r19, r23
+	andi r19, 0b11110000
+	lsr r19
+	lsr r19
+	lsr r19
+	lsr r19
+	call output_hex
+	mov r19, r23
+	andi r19, 0b00001111
+	call output_hex
+	ret
+
+;output integer from 0 to 15 stored in r19 as hex
+output_hex:
+	ldi r18, 0x30
+	cpi r19, 10
+	brlo less_than_nine
+	ldi r18, 0x41
+	subi r19, 10
+less_than_nine:
+	add r19, r18
+	call serial_transmit
+	ret
+
+;delay for around 0.02 seconds
+delay:
+	ldi r18, 1
+outerloop:
+	ldi r19, 1
+	inc r18
+	tst r18
+	breq end
+innerloop:
+	nop
+	inc r19
+	tst r19
+	breq outerloop
+	rjmp innerloop
+end:
+	ret
+
+;delay for around 1 second
+delay_long:
+	ldi r17, 50
+delay_long_loop:
+	call delay
+	dec r17
+	tst r17
+	breq delay_long_end
+	rjmp delay_long_loop
+delay_long_end:
+	ret
+	
 
 ; initialise serial connection
 serial_init:

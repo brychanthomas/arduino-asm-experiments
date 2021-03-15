@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm Mon Mar 15 19:21:07 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm Mon Mar 15 20:55:41 2021
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
@@ -993,57 +993,133 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\m
                                  
                                  
                                  start:
-                                 	;call serial_init
+000000 940e 0054                 	call serial_init
                                  
-000000 e040                          ldi r20, 0 ;load 1 into prev term registers
-000001 e051                      	ldi r21, 1
+000002 e040                          ldi r20, 0 ;load 1 into prev term registers
+000003 e051                      	ldi r21, 1
                                  
-000002 e060                      	ldi r22, 0 ;load 1 into current term registers
-000003 e071                      	ldi r23, 1
+000004 e060                      	ldi r22, 0 ;load 1 into current term registers
+000005 e071                      	ldi r23, 1
                                  
-000004 e080                      	ldi r24, 0 ;load 0 into temporary value registers
-000005 e090                      	ldi r25, 0
+000006 e080                      	ldi r24, 0 ;load 0 into temporary value registers
+000007 e090                      	ldi r25, 0
                                  
                                  loop:
-000006 940e 000d                 	call calculate_next_term
-000008 940e 000d                 	call calculate_next_term
-00000a 940e 000d                 	call calculate_next_term ;validate 03, 00, 05 in regs
+000008 940e 0018                 	call calculate_next_term
+00000a 1764                      	cp r22, r20
+00000b f058                      	brlo halt
+00000c 940e 001f                 	call output_term
+00000e e03d                      	ldi r19, 0x0d
+00000f 940e 0061                 	call serial_transmit
+000011 e03a                      	ldi r19, 0x0a
+000012 940e 0061                 	call serial_transmit
+000014 940e 004c                 	call delay_long
+000016 cff1                      	rjmp loop
+                                 
                                  halt:
-00000c cfff                      	rjmp halt
+000017 cfff                      	rjmp halt 
                                  
+                                 ;calculate next fibonacci term, store it in r22 and r23
                                  calculate_next_term:
-00000d 2f86                      	mov r24, r22 ;copy current term into temp registers
-00000e 2f97                      	mov r25, r23
+000018 2f86                      	mov r24, r22 ;copy current term into temp registers
+000019 2f97                      	mov r25, r23
                                  
-00000f 0f75                      	add r23, r21 ;add current to prev and store result in current
-000010 1f64                      	adc r22, r20
+00001a 0f75                      	add r23, r21 ;add current to prev and store result in current
+00001b 1f64                      	adc r22, r20
                                  
-000011 2f48                      	mov r20, r24 ;copy temp regiters into prev registers
-000012 2f59                      	mov r21, r25
-000013 9508                      	ret
+00001c 2f48                      	mov r20, r24 ;copy temp regiters into prev registers
+00001d 2f59                      	mov r21, r25
+00001e 9508                      	ret
+                                 
+                                 ;writes the value in r22 and r23 to serial as hexadecimal
+                                 output_term:
+00001f 2f36                      	mov r19, r22
+000020 7f30                      	andi r19, 0b11110000
+000021 9536                      	lsr r19
+000022 9536                      	lsr r19
+000023 9536                      	lsr r19
+000024 9536                      	lsr r19
+000025 940e 0038                 	call output_hex
+000027 2f36                      	mov r19, r22
+000028 703f                      	andi r19, 0b00001111
+000029 940e 0038                 	call output_hex
+                                 
+00002b 2f37                      	mov r19, r23
+00002c 7f30                      	andi r19, 0b11110000
+00002d 9536                      	lsr r19
+00002e 9536                      	lsr r19
+00002f 9536                      	lsr r19
+000030 9536                      	lsr r19
+000031 940e 0038                 	call output_hex
+000033 2f37                      	mov r19, r23
+000034 703f                      	andi r19, 0b00001111
+000035 940e 0038                 	call output_hex
+000037 9508                      	ret
+                                 
+                                 ;output integer from 0 to 15 stored in r19 as hex
+                                 output_hex:
+000038 e320                      	ldi r18, 0x30
+000039 303a                      	cpi r19, 10
+00003a f010                      	brlo less_than_nine
+00003b e421                      	ldi r18, 0x41
+00003c 503a                      	subi r19, 10
+                                 less_than_nine:
+00003d 0f32                      	add r19, r18
+00003e 940e 0061                 	call serial_transmit
+000040 9508                      	ret
+                                 
+                                 ;delay for around 0.02 seconds
+                                 delay:
+000041 e021                      	ldi r18, 1
+                                 outerloop:
+000042 e031                      	ldi r19, 1
+000043 9523                      	inc r18
+000044 2322                      	tst r18
+000045 f029                      	breq end
+                                 innerloop:
+000046 0000                      	nop
+000047 9533                      	inc r19
+000048 2333                      	tst r19
+000049 f3c1                      	breq outerloop
+00004a cffb                      	rjmp innerloop
+                                 end:
+00004b 9508                      	ret
+                                 
+                                 ;delay for around 1 second
+                                 delay_long:
+00004c e312                      	ldi r17, 50
+                                 delay_long_loop:
+00004d 940e 0041                 	call delay
+00004f 951a                      	dec r17
+000050 2311                      	tst r17
+000051 f009                      	breq delay_long_end
+000052 cffa                      	rjmp delay_long_loop
+                                 delay_long_end:
+000053 9508                      	ret
+                                 	
                                  
                                  ; initialise serial connection
                                  serial_init:
-000014 e607                      	ldi r16, 103
-000015 2711                      	clr r17
+000054 e607                      	ldi r16, 103
+000055 2711                      	clr r17
                                  
-000016 9310 00c5                 	sts 0xc5, r17
-000018 9300 00c4                 	sts 0xc4, r16
+000056 9310 00c5                 	sts 0xc5, r17
+000058 9300 00c4                 	sts 0xc4, r16
                                  
-00001a e108                      	ldi	r16, (1<<4)|(1<<3)
-00001b 9300 00c1                 	sts	0xc1, r16
+00005a e108                      	ldi	r16, (1<<4)|(1<<3)
+00005b 9300 00c1                 	sts	0xc1, r16
                                  
-00001d e00e                      	ldi	r16, 0b00001110
-00001e 9300 00c2                 	sts	0xc2, r16
-000020 9508                      	ret
+00005d e00e                      	ldi	r16, 0b00001110
+00005e 9300 00c2                 	sts	0xc2, r16
+000060 9508                      	ret
                                  
                                  ; transmit byte stored in r19 over serial
                                  serial_transmit:
-000021 9100 00c0                 	lds	r16, 0xc0
-000023 ff05                      	sbrs r16, 5
-000024 cffc                      	rjmp serial_transmit
+000061 9100 00c0                 	lds	r16, 0xc0
+000063 ff05                      	sbrs r16, 5
+000064 cffc                      	rjmp serial_transmit
                                  
-000025 9330 00c6                 	sts 0xc6, r19
+000065 9330 00c6                 	sts 0xc6, r19
 
 
 RESOURCE USE INFORMATION
@@ -1063,37 +1139,37 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:   8 r17:   2 r18:   0 r19:   1 r20:   3 
-r21:   3 r22:   3 r23:   3 r24:   3 r25:   3 r26:   0 r27:   0 r28:   0 
+r13:   0 r14:   0 r15:   0 r16:   8 r17:   5 r18:   6 r19:  25 r20:   4 
+r21:   3 r22:   6 r23:   5 r24:   3 r25:   3 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
-Registers used: 9 out of 35 (25.7%)
+Registers used: 10 out of 35 (28.6%)
 
 "ATmega328P" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   1 add   :   1 adiw  :   0 and   :   0 
-andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
+.lds  :   0 .sts  :   0 adc   :   1 add   :   2 adiw  :   0 and   :   0 
+andi  :   4 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :   3 brge  :   0 brhc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   2 brlt  :   0 brmi  :   0 
 brne  :   0 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   3 cbi   :   0 cbr   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  12 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   0 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   0 
-ld    :   0 ldd   :   0 ldi   :   9 lds   :   1 lpm   :   0 lsl   :   0 
-lsr   :   0 mov   :   4 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 pop   :   0 
-push  :   0 rcall :   0 ret   :   3 reti  :   0 rjmp  :   2 rol   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   0 
+cpi   :   1 cpse  :   0 dec   :   1 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   2 jmp   :   0 
+ld    :   0 ldd   :   0 ldi   :  16 lds   :   1 lpm   :   0 lsl   :   0 
+lsr   :   8 mov   :   8 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
+neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :   0 pop   :   0 
+push  :   0 rcall :   0 ret   :   7 reti  :   0 rjmp  :   5 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   5 
-sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 11 out of 113 (9.7%)
+sub   :   0 subi  :   1 swap  :   0 tst   :   3 wdr   :   0 
+Instructions used: 22 out of 113 (19.5%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000050     80      0     80   32768   0.2%
+[.cseg] 0x000000 0x0000d0    208      0    208   32768   0.6%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
