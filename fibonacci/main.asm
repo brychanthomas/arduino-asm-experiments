@@ -6,12 +6,37 @@
 ;
 
 
-; Replace with your application code
 start:
-    inc r16
-    rjmp start
+	;call serial_init
 
-;initialise serial connection
+    ldi r20, 0 ;load 1 into prev term registers
+	ldi r21, 1
+
+	ldi r22, 0 ;load 1 into current term registers
+	ldi r23, 1
+
+	ldi r24, 0 ;load 0 into temporary value registers
+	ldi r25, 0
+
+loop:
+	call calculate_next_term
+	call calculate_next_term
+	call calculate_next_term
+halt:
+	rjmp halt ;should see 00 03 00 05 in regs 20-23
+
+calculate_next_term:
+	mov r24, r22 ;copy current term into temp registers
+	mov r25, r23
+
+	add r23, r21 ;add current to prev and store result in current
+	adc r22, r20
+
+	mov r20, r24 ;copy temp regiters into prev registers
+	mov r21, r25
+	ret
+
+; initialise serial connection
 serial_init:
 	ldi r16, 103
 	clr r17

@@ -1,0 +1,32 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.8</VERSION>
+ <DEVICE>"ATmega328P"</DEVICE>
+ <WORKING_DIR>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\Debug\fibonacci.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>fibonacci.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>fibonacci.map</FILE>
+  <FILE>fibonacci.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <start><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>9</LINE></start>
+  <loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>21</LINE></loop>
+  <calculate_next_term><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>28</LINE></calculate_next_term>
+  <halt><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>25</LINE></halt>
+  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>40</LINE></serial_init>
+  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\fibonacci\main.asm</FILE><LINE>55</LINE></serial_transmit>
+ </LABELS>
+</ASSEMBLER_INFO>
