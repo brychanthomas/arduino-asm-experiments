@@ -53,10 +53,7 @@ calculate_next_term:
 output_term:
 	mov r19, r22
 	andi r19, 0b11110000
-	lsr r19
-	lsr r19
-	lsr r19
-	lsr r19
+	swap r19
 	call output_hex
 	mov r19, r22
 	andi r19, 0b00001111
@@ -64,10 +61,7 @@ output_term:
 
 	mov r19, r23
 	andi r19, 0b11110000
-	lsr r19
-	lsr r19
-	lsr r19
-	lsr r19
+	swap r19
 	call output_hex
 	mov r19, r23
 	andi r19, 0b00001111
