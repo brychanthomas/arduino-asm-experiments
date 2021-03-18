@@ -23,15 +23,17 @@
  </OUTPUT_FILES>
  <LABELS>
   <init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>8</LINE></init>
-  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>27</LINE></serial_init>
+  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>43</LINE></serial_init>
   <start><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>10</LINE></start>
-  <loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>13</LINE></loop>
-  <serial_receive><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>51</LINE></serial_receive>
-  <input_finished><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>19</LINE></input_finished>
-  <process_number><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>66</LINE></process_number>
-  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>42</LINE></serial_transmit>
-  <newline><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>60</LINE></newline>
-  <process_number_loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>73</LINE></process_number_loop>
-  <number_end_reached><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>83</LINE></number_end_reached>
+  <get_first_num><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>13</LINE></get_first_num>
+  <serial_receive><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>67</LINE></serial_receive>
+  <first_num_finished><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>21</LINE></first_num_finished>
+  <process_number><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>82</LINE></process_number>
+  <get_second_num><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>24</LINE></get_second_num>
+  <second_num_finished><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>32</LINE></second_num_finished>
+  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>58</LINE></serial_transmit>
+  <newline><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>76</LINE></newline>
+  <process_number_loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>89</LINE></process_number_loop>
+  <number_end_reached><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm</FILE><LINE>99</LINE></number_end_reached>
  </LABELS>
 </ASSEMBLER_INFO>

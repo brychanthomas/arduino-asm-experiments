@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Thu Mar 18 19:29:27 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Thu Mar 18 19:43:31 2021
 
 
 EQU  SIGNATURE_000 0000001e
@@ -696,13 +696,15 @@ EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
 CSEG init         00000000
-CSEG serial_init  0000000f
+CSEG serial_init  00000020
 CSEG start        00000002
-CSEG loop         00000004
-CSEG serial_receive 00000023
-CSEG input_finished 0000000a
-CSEG process_number 0000002e
-CSEG serial_transmit 0000001c
-CSEG newline      0000002a
-CSEG process_number_loop 00000034
-CSEG number_end_reached 0000003d
+CSEG get_first_num 00000004
+CSEG serial_receive 00000034
+CSEG first_num_finished 0000000c
+CSEG process_number 0000003f
+CSEG get_second_num 0000000f
+CSEG second_num_finished 00000017
+CSEG serial_transmit 0000002d
+CSEG newline      0000003b
+CSEG process_number_loop 00000045
+CSEG number_end_reached 0000004e

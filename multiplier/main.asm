@@ -10,15 +10,31 @@ init:
 start:
 	ldi r19, 0 ;push 0 to stack
 	push r19
-loop:
+get_first_num:
     call serial_receive
-	cpi r19, 0x0a
-	breq input_finished
+	cpi r19, 0x2a ;* char
+	breq first_num_finished
+	cpi r19, 0x20 ;space
+	breq get_first_num
 	push r19
-	rjmp loop
-input_finished:
+	rjmp get_first_num
+first_num_finished:
 	call process_number
+	mov r20, r19
+get_second_num:
+	call serial_receive
+	cpi r19, 0x0a ;newline char
+	breq second_num_finished
+	cpi r19, 0x20 ;space
+	breq get_second_num
+	push r19
+	rjmp get_second_num
+second_num_finished:
+	call process_number
+	mul r19, r20
+	mov r19, r0
 	call serial_transmit
+	call newline
 	rjmp start
 
 	
@@ -81,6 +97,8 @@ process_number_loop:
 	mov r17, r0
 	rjmp process_number_loop
 number_end_reached:
+	ldi r16, 0 ;push 0 back to stack
+	push r16
 	push r10 ;push return pointer
 	push r9
 	ret
