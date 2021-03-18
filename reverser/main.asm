@@ -13,8 +13,11 @@ init:
 start:
 	ldi r19, 0x0a ;push newline onto the stack
 	push r19
+	ldi r19, 0x3e ;print '>'
+	call serial_transmit
 loop:
     call serial_receive ;receive a character
+	call serial_transmit ;print character
 	cpi r19, 0x0a
 	breq input_finished ;if it's a newline jump to input_finished
 	push r19 ;otherwise push it to the stack

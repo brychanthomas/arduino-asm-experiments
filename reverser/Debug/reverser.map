@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm Thu Mar 18 18:42:40 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm Thu Mar 18 21:09:33 2021
 
 
 EQU  SIGNATURE_000 0000001e
@@ -696,10 +696,9 @@ EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
 CSEG init         00000000
-CSEG serial_init  00000010
+CSEG serial_init  00000015
 CSEG start        00000002
-CSEG loop         00000004
-CSEG serial_receive 00000024
-CSEG input_finished 0000000a
-CSEG serial_transmit 0000001d
-CSEG newline      0000002b
+CSEG serial_transmit 00000022
+CSEG loop         00000007
+CSEG serial_receive 00000029
+CSEG input_finished 0000000f

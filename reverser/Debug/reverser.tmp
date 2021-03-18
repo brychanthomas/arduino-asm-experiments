@@ -22,13 +22,12 @@
   <FILE>reverser.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>8</LINE></init>
-  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>27</LINE></serial_init>
-  <start><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>10</LINE></start>
-  <loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>13</LINE></loop>
-  <serial_receive><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>51</LINE></serial_receive>
-  <input_finished><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>19</LINE></input_finished>
-  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>42</LINE></serial_transmit>
-  <newline><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>60</LINE></newline>
+  <init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>11</LINE></init>
+  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>33</LINE></serial_init>
+  <start><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>13</LINE></start>
+  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>48</LINE></serial_transmit>
+  <loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>18</LINE></loop>
+  <serial_receive><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>57</LINE></serial_receive>
+  <input_finished><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>25</LINE></input_finished>
  </LABELS>
 </ASSEMBLER_INFO>

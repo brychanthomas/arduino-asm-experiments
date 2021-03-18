@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm Thu Mar 18 18:42:40 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm Thu Mar 18 21:09:33 2021
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
@@ -990,63 +990,63 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\ma
                                  ; Created: 18/03/2021 18:41:27
                                  ; Author : Brychan
                                  ;
+                                 ; Receives a string over serial, reverses it using the stack and transmits
+                                 ; the reverse
+                                 ;
                                  
                                  init:
-000000 940e 0010                 	call serial_init
+000000 940e 0015                 	call serial_init
                                  start:
-000002 e03a                      	ldi r19, 0x0a
+000002 e03a                      	ldi r19, 0x0a ;push newline onto the stack
 000003 933f                      	push r19
+000004 e33e                      	ldi r19, 0x3e ;print '>'
+000005 940e 0022                 	call serial_transmit
                                  loop:
-000004 940e 0024                     call serial_receive
-000006 303a                      	cpi r19, 0x0a
-000007 f011                      	breq input_finished
-000008 933f                      	push r19
-000009 cffa                      	rjmp loop
+000007 940e 0029                     call serial_receive ;receive a character
+000009 940e 0022                 	call serial_transmit ;print character
+00000b 303a                      	cpi r19, 0x0a
+00000c f011                      	breq input_finished ;if it's a newline jump to input_finished
+00000d 933f                      	push r19 ;otherwise push it to the stack
+00000e cff8                      	rjmp loop
                                  input_finished:
-00000a 913f                      	pop r19
-00000b 940e 001d                 	call serial_transmit
-00000d 303a                      	cpi r19, 0x0a
-00000e f399                      	breq start
-00000f cffa                      	rjmp input_finished
+00000f 913f                      	pop r19 ;remove char from top of stack
+000010 940e 0022                 	call serial_transmit ;transmit it
+000012 303a                      	cpi r19, 0x0a
+000013 f371                      	breq start ;if it's a newline, full string has been sent so go back to start
+000014 cffa                      	rjmp input_finished
                                  
                                  ;initialise serial connection
                                  serial_init:
-000010 e607                      	ldi r16, 103
-000011 2711                      	clr r17
+000015 e607                      	ldi r16, 103
+000016 2711                      	clr r17
                                  
-000012 9310 00c5                 	sts 0xc5, r17
-000014 9300 00c4                 	sts 0xc4, r16
+000017 9310 00c5                 	sts 0xc5, r17
+000019 9300 00c4                 	sts 0xc4, r16
                                  
-000016 e108                      	ldi	r16, (1<<4)|(1<<3)
-000017 9300 00c1                 	sts	0xc1, r16
+00001b e108                      	ldi	r16, (1<<4)|(1<<3)
+00001c 9300 00c1                 	sts	0xc1, r16
                                  
-000019 e00e                      	ldi	r16, 0b00001110
-00001a 9300 00c2                 	sts	0xc2, r16
-00001c 9508                      	ret
+00001e e00e                      	ldi	r16, 0b00001110
+00001f 9300 00c2                 	sts	0xc2, r16
+000021 9508                      	ret
                                  
                                  ;transmit byte stored in r19 over serial
                                  serial_transmit:
-00001d 9100 00c0                 	lds	r16, 0xc0
-00001f ff05                      	sbrs r16, 5
-000020 cffc                      	rjmp serial_transmit
+000022 9100 00c0                 	lds	r16, 0xc0
+000024 ff05                      	sbrs r16, 5
+000025 cffc                      	rjmp serial_transmit
                                  
-000021 9330 00c6                 	sts 0xc6, r19
-000023 9508                      	ret
+000026 9330 00c6                 	sts 0xc6, r19
+000028 9508                      	ret
                                  
                                  ;wait for byte to be sent, store it in r19 and return
                                  serial_receive:
-000024 9100 00c0                 	lds r16, 0xc0 ;get value in USART Control and Status Register A
-000026 ff07                      	sbrs r16, 7 ;if receive is complete skip next instruction
-000027 cffc                      	rjmp serial_receive
+000029 9100 00c0                 	lds r16, 0xc0 ;get value in USART Control and Status Register A
+00002b ff07                      	sbrs r16, 7 ;if receive is complete skip next instruction
+00002c cffc                      	rjmp serial_receive
                                  
-000028 9130 00c6                 	lds r19, 0xc6 ;load value in USART I/O data register into r19
-00002a 9508                      	ret
-                                 
-                                 ;transmit line feed character
-                                 newline:
-00002b e03a                      	ldi r19, 0x0a
-00002c 940e 001d                 	call serial_transmit
-00002e 9508                      	ret
+00002d 9130 00c6                 	lds r19, 0xc6 ;load value in USART I/O data register into r19
+00002f 9508                      	ret
 
 
 RESOURCE USE INFORMATION
@@ -1077,7 +1077,7 @@ andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0
 brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   0 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   4 cbi   :   0 cbr   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   5 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
 cpi   :   2 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
@@ -1085,7 +1085,7 @@ fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   0
 ld    :   0 ldd   :   0 ldi   :   5 lds   :   3 lpm   :   0 lsl   :   0 
 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 pop   :   1 
-push  :   2 rcall :   0 ret   :   4 reti  :   0 rjmp  :   4 rol   :   0 
+push  :   2 rcall :   0 ret   :   3 reti  :   0 rjmp  :   4 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   2 sec   :   0 seh   :   0 
 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
@@ -1096,7 +1096,7 @@ Instructions used: 12 out of 113 (10.6%)
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00005e     94      0     94   32768   0.3%
+[.cseg] 0x000000 0x000060     96      0     96   32768   0.3%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
