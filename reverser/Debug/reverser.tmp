@@ -1,0 +1,34 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.8</VERSION>
+ <DEVICE>"ATmega328P"</DEVICE>
+ <WORKING_DIR>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\Debug\reverser.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>reverser.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>reverser.map</FILE>
+  <FILE>reverser.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>8</LINE></init>
+  <serial_init><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>27</LINE></serial_init>
+  <start><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>10</LINE></start>
+  <loop><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>13</LINE></loop>
+  <serial_receive><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>51</LINE></serial_receive>
+  <input_finished><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>19</LINE></input_finished>
+  <serial_transmit><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>42</LINE></serial_transmit>
+  <newline><FILE>C:\Users\Brychan\Desktop\_Programming\Arduino asm\reverser\main.asm</FILE><LINE>60</LINE></newline>
+ </LABELS>
+</ASSEMBLER_INFO>
