@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Thu Mar 18 18:04:40 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Thu Mar 18 19:29:27 2021
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
@@ -991,48 +991,84 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
                                  ; Author : Brychan
                                  ;
                                  
-                                 
-                                 ; Replace with your application code
+                                 init:
+000000 940e 000f                 	call serial_init
                                  start:
-000000 940e 0007                 	call serial_init
+000002 e030                      	ldi r19, 0 ;push 0 to stack
+000003 933f                      	push r19
                                  loop:
-000002 940e 001b                     call serial_receive
-000004 940e 0014                 	call serial_transmit
-000006 cffb                          rjmp loop
+000004 940e 0023                     call serial_receive
+000006 303a                      	cpi r19, 0x0a
+000007 f011                      	breq input_finished
+000008 933f                      	push r19
+000009 cffa                      	rjmp loop
+                                 input_finished:
+00000a 940e 002e                 	call process_number
+00000c 940e 001c                 	call serial_transmit
+00000e cff3                      	rjmp start
+                                 
+                                 	
                                  
                                  ;initialise serial connection
                                  serial_init:
-000007 e607                      	ldi r16, 103
-000008 2711                      	clr r17
+00000f e607                      	ldi r16, 103
+000010 2711                      	clr r17
                                  
-000009 9310 00c5                 	sts 0xc5, r17
-00000b 9300 00c4                 	sts 0xc4, r16
+000011 9310 00c5                 	sts 0xc5, r17
+000013 9300 00c4                 	sts 0xc4, r16
                                  
-00000d e108                      	ldi	r16, (1<<4)|(1<<3)
-00000e 9300 00c1                 	sts	0xc1, r16
+000015 e108                      	ldi	r16, (1<<4)|(1<<3)
+000016 9300 00c1                 	sts	0xc1, r16
                                  
-000010 e00e                      	ldi	r16, 0b00001110
-000011 9300 00c2                 	sts	0xc2, r16
-000013 9508                      	ret
+000018 e00e                      	ldi	r16, 0b00001110
+000019 9300 00c2                 	sts	0xc2, r16
+00001b 9508                      	ret
                                  
                                  ;transmit byte stored in r19 over serial
                                  serial_transmit:
-000014 9100 00c0                 	lds	r16, 0xc0
-000016 ff05                      	sbrs r16, 5
-000017 cffc                      	rjmp serial_transmit
+00001c 9100 00c0                 	lds	r16, 0xc0
+00001e ff05                      	sbrs r16, 5
+00001f cffc                      	rjmp serial_transmit
                                  
-000018 9330 00c6                 	sts 0xc6, r19
-00001a 9508                      	ret
+000020 9330 00c6                 	sts 0xc6, r19
+000022 9508                      	ret
                                  
                                  ;wait for byte to be sent, store it in r19 and return
                                  serial_receive:
-00001b 9100 00c0                 	lds r16, 0xc0 ;get value in USART Control and Status Register A
-00001d ff07                      	sbrs r16, 7 ;if receive is complete skip next instruction
-00001e cffc                      	rjmp serial_receive
+000023 9100 00c0                 	lds r16, 0xc0 ;get value in USART Control and Status Register A
+000025 ff07                      	sbrs r16, 7 ;if receive is complete skip next instruction
+000026 cffc                      	rjmp serial_receive
                                  
-00001f 9130 00c6                 	lds r19, 0xc6 ;load value in USART I/O data register into r19
-000021 9508                      	ret
+000027 9130 00c6                 	lds r19, 0xc6 ;load value in USART I/O data register into r19
+000029 9508                      	ret
                                  
+                                 ;transmit line feed character
+                                 newline:
+00002a e03a                      	ldi r19, 0x0a
+00002b 940e 001c                 	call serial_transmit
+00002d 9508                      	ret
+                                 
+                                 ;converts denary string in stack to integer in r19
+                                 process_number:
+00002e 909f                      	pop r9 ;pop return pointer
+00002f 90af                      	pop r10
+000030 e300                      	ldi r16, 0x30 ;ASCII code of 0
+000031 e011                      	ldi r17, 1 ;digit multiplier
+000032 e02a                      	ldi r18, 10 ;digit multiplier increased by 10 on each digit
+000033 e030                      	ldi r19, 0 ;initialise r19 to 0
+                                 process_number_loop:
+000034 90ff                      	pop r15 ;get next char
+000035 20ff                      	tst r15 ;if char is zero number has ended
+000036 f031                      	breq number_end_reached
+000037 1af0                      	sub r15, r16 ;subtract ASCII value of zero to get integer 0 - 9
+000038 9ef1                      	mul r15, r17 ;multiply by digit multiplier
+000039 0d30                      	add r19, r0 ;add result to r19
+00003a 9f12                      	mul r17, r18 ;multiply digit multiplier by 10
+00003b 2d10                      	mov r17, r0
+00003c cff7                      	rjmp process_number_loop
+                                 number_end_reached:
+00003d 92af                      	push r10 ;push return pointer
+00003e 929f                      	push r9
 
 
 RESOURCE USE INFORMATION
@@ -1050,39 +1086,39 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
-r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  10 r17:   2 r18:   0 r19:   2 r20:   0 
+x  :   0 y  :   0 z  :   0 r0 :   2 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   2 r10:   2 r11:   0 r12:   0 
+r13:   0 r14:   0 r15:   4 r16:  12 r17:   6 r18:   2 r19:   9 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
-Registers used: 3 out of 35 (8.6%)
+Registers used: 8 out of 35 (22.9%)
 
 "ATmega328P" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   0 add   :   1 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   0 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   3 cbi   :   0 cbr   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   5 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   0 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
+cpi   :   1 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   0 
-ld    :   0 ldd   :   0 ldi   :   3 lds   :   3 lpm   :   0 lsl   :   0 
-lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 pop   :   0 
-push  :   0 rcall :   0 ret   :   3 reti  :   0 rjmp  :   3 rol   :   0 
+ld    :   0 ldd   :   0 ldi   :   9 lds   :   3 lpm   :   0 lsl   :   0 
+lsr   :   0 mov   :   1 movw  :   0 mul   :   2 muls  :   0 mulsu :   0 
+neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 pop   :   3 
+push  :   4 rcall :   0 ret   :   5 reti  :   0 rjmp  :   5 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   2 sec   :   0 seh   :   0 
 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   5 
-sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 8 out of 113 (7.1%)
+sub   :   1 subi  :   0 swap  :   0 tst   :   1 wdr   :   0 
+Instructions used: 17 out of 113 (15.0%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000044     68      0     68   32768   0.2%
+[.cseg] 0x000000 0x000080    128      0    128   32768   0.4%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
