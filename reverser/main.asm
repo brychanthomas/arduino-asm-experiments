@@ -4,23 +4,26 @@
 ; Created: 18/03/2021 18:41:27
 ; Author : Brychan
 ;
+; Receives a string over serial, reverses it using the stack and transmits
+; the reverse
+;
 
 init:
 	call serial_init
 start:
-	ldi r19, 0x0a
+	ldi r19, 0x0a ;push newline onto the stack
 	push r19
 loop:
-    call serial_receive
+    call serial_receive ;receive a character
 	cpi r19, 0x0a
-	breq input_finished
-	push r19
+	breq input_finished ;if it's a newline jump to input_finished
+	push r19 ;otherwise push it to the stack
 	rjmp loop
 input_finished:
-	pop r19
-	call serial_transmit
+	pop r19 ;remove char from top of stack
+	call serial_transmit ;transmit it
 	cpi r19, 0x0a
-	breq start
+	breq start ;if it's a newline, full string has been sent so go back to start
 	rjmp input_finished
 
 ;initialise serial connection
@@ -54,10 +57,4 @@ serial_receive:
 	rjmp serial_receive
 
 	lds r19, 0xc6 ;load value in USART I/O data register into r19
-	ret
-
-;transmit line feed character
-newline:
-	ldi r19, 0x0a
-	call serial_transmit
 	ret
