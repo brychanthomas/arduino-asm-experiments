@@ -7,6 +7,19 @@
 
 init:
 	call serial_init
+	;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r6:r7:r8
+	ldi r16, 0xf2 ;load 62145 into r4:r5
+	mov r4, r16
+	ldi r16, 0xc1
+	mov r5, r16
+	ldi r16, 0x24 ;load 36 into r16
+	call multiply ;multiply r16 by r4:r5. Result should be 2237220 or 0x222324, which translates to ASCII "#$
+	mov r19, r6
+	call serial_transmit
+	mov r19, r7
+	call serial_transmit
+	mov r19, r8
+	call serial_transmit
 start:
 	ldi r19, 0 ;push 0 to stack
 	push r19
@@ -101,4 +114,23 @@ number_end_reached:
 	push r16
 	push r10 ;push return pointer
 	push r9
+	ret
+
+;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
+;16-bit remainder stored in r7:r8
+divide:
+	ldi r16, 0 ;i=0
+divideloop:
+	
+
+;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r6:r7:r8
+multiply:
+	mul r16, r5 ;multiply low byte
+	mov r8, r0 ;copy result to r7:r8
+	mov r7, r1 
+	mul r16, r4 ;multiply high byte
+	add	r7, r0 ;add low byte to r7
+	ldi r17, 0
+	mov r6, r17
+	adc r6, r1 ;add high byte to r6
 	ret
