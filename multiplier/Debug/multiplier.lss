@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 13:43:59 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 14:00:49 2021
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
@@ -992,9 +992,11 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
                                  ;
                                  
                                  init:
-000000 940e 0030                 	call serial_init
+000000 940e 0040                 	call serial_init
                                  	;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
                                  	;16-bit remainder stored in r7:r8
+                                 
+                                 	;16-bit REMAINDER TEST
 000002 e40a                      	ldi r16, 0x4a ;load 0x4a38 into numerator
 000003 2e20                      	mov r2, r16
 000004 e308                      	ldi r16, 0x38
@@ -1003,140 +1005,157 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
 000007 2e40                      	mov r4, r16
 000008 e100                      	ldi r16, 0x10
 000009 2e50                      	mov r5, r16
-00000a 940e 0063                 	call divide ;remainder of 0x4a38 / 0x2710 is 0x2328
+00000a 940e 0073                 	call divide ;remainder of 0x4a38 / 0x2710 is 0x2328
 00000c 2d37                      	mov r19, r7
-00000d 940e 003d                 	call serial_transmit ;should print #(
+00000d 940e 004d                 	call serial_transmit ;should print #(
 00000f 2d38                      	mov r19, r8
-000010 940e 003d                 	call serial_transmit
+000010 940e 004d                 	call serial_transmit
+                                 
+                                 	;8-bit RESULT TEST
+000012 ee0a                      	ldi r16, 0xea ;load 0xea60 into numerator
+000013 2e20                      	mov r2, r16
+000014 e600                      	ldi r16, 0x60
+000015 2e30                      	mov r3, r16
+000016 e002                      	ldi r16, 0x02 ;load 0x0226 into denominator
+000017 2e40                      	mov r4, r16
+000018 e206                      	ldi r16, 0x26
+000019 2e50                      	mov r5, r16
+00001a 940e 0073                 	call divide ;result is 0x6d and remainder is 0x32
+00001c 2d36                      	mov r19, r6
+00001d 940e 004d                 	call serial_transmit ;result = m
+00001f 2d38                      	mov r19, r8
+000020 940e 004d                 	call serial_transmit ;remainder low byte = 2
+                                 
+                                 
                                  
                                  start:
-000012 e030                      	ldi r19, 0 ;push 0 to stack
-000013 933f                      	push r19
+000022 e030                      	ldi r19, 0 ;push 0 to stack
+000023 933f                      	push r19
                                  get_first_num:
-000014 940e 0044                     call serial_receive
-000016 323a                      	cpi r19, 0x2a ;* char
-000017 f021                      	breq first_num_finished
-000018 3230                      	cpi r19, 0x20 ;space
-000019 f3d1                      	breq get_first_num
-00001a 933f                      	push r19
-00001b cff8                      	rjmp get_first_num
+000024 940e 0054                     call serial_receive
+000026 323a                      	cpi r19, 0x2a ;* char
+000027 f021                      	breq first_num_finished
+000028 3230                      	cpi r19, 0x20 ;space
+000029 f3d1                      	breq get_first_num
+00002a 933f                      	push r19
+00002b cff8                      	rjmp get_first_num
                                  first_num_finished:
-00001c 940e 004f                 	call process_number
-00001e 2f43                      	mov r20, r19
+00002c 940e 005f                 	call process_number
+00002e 2f43                      	mov r20, r19
                                  get_second_num:
-00001f 940e 0044                 	call serial_receive
-000021 303a                      	cpi r19, 0x0a ;newline char
-000022 f021                      	breq second_num_finished
-000023 3230                      	cpi r19, 0x20 ;space
-000024 f3d1                      	breq get_second_num
-000025 933f                      	push r19
-000026 cff8                      	rjmp get_second_num
+00002f 940e 0054                 	call serial_receive
+000031 303a                      	cpi r19, 0x0a ;newline char
+000032 f021                      	breq second_num_finished
+000033 3230                      	cpi r19, 0x20 ;space
+000034 f3d1                      	breq get_second_num
+000035 933f                      	push r19
+000036 cff8                      	rjmp get_second_num
                                  second_num_finished:
-000027 940e 004f                 	call process_number
-000029 9f34                      	mul r19, r20
-00002a 2d30                      	mov r19, r0
-00002b 940e 003d                 	call serial_transmit
-00002d 940e 004b                 	call newline
-00002f cfe2                      	rjmp start
+000037 940e 005f                 	call process_number
+000039 9f34                      	mul r19, r20
+00003a 2d30                      	mov r19, r0
+00003b 940e 004d                 	call serial_transmit
+00003d 940e 005b                 	call newline
+00003f cfe2                      	rjmp start
                                  
                                  	
                                  
                                  ;initialise serial connection
                                  serial_init:
-000030 e607                      	ldi r16, 103
-000031 2711                      	clr r17
+000040 e607                      	ldi r16, 103
+000041 2711                      	clr r17
                                  
-000032 9310 00c5                 	sts 0xc5, r17
-000034 9300 00c4                 	sts 0xc4, r16
+000042 9310 00c5                 	sts 0xc5, r17
+000044 9300 00c4                 	sts 0xc4, r16
                                  
-000036 e108                      	ldi	r16, (1<<4)|(1<<3)
-000037 9300 00c1                 	sts	0xc1, r16
+000046 e108                      	ldi	r16, (1<<4)|(1<<3)
+000047 9300 00c1                 	sts	0xc1, r16
                                  
-000039 e00e                      	ldi	r16, 0b00001110
-00003a 9300 00c2                 	sts	0xc2, r16
-00003c 9508                      	ret
+000049 e00e                      	ldi	r16, 0b00001110
+00004a 9300 00c2                 	sts	0xc2, r16
+00004c 9508                      	ret
                                  
                                  ;transmit byte stored in r19 over serial
                                  serial_transmit:
-00003d 9100 00c0                 	lds	r16, 0xc0
-00003f ff05                      	sbrs r16, 5
-000040 cffc                      	rjmp serial_transmit
+00004d 9100 00c0                 	lds	r16, 0xc0
+00004f ff05                      	sbrs r16, 5
+000050 cffc                      	rjmp serial_transmit
                                  
-000041 9330 00c6                 	sts 0xc6, r19
-000043 9508                      	ret
+000051 9330 00c6                 	sts 0xc6, r19
+000053 9508                      	ret
                                  
                                  ;wait for byte to be sent, store it in r19 and return
                                  serial_receive:
-000044 9100 00c0                 	lds r16, 0xc0 ;get value in USART Control and Status Register A
-000046 ff07                      	sbrs r16, 7 ;if receive is complete skip next instruction
-000047 cffc                      	rjmp serial_receive
+000054 9100 00c0                 	lds r16, 0xc0 ;get value in USART Control and Status Register A
+000056 ff07                      	sbrs r16, 7 ;if receive is complete skip next instruction
+000057 cffc                      	rjmp serial_receive
                                  
-000048 9130 00c6                 	lds r19, 0xc6 ;load value in USART I/O data register into r19
-00004a 9508                      	ret
+000058 9130 00c6                 	lds r19, 0xc6 ;load value in USART I/O data register into r19
+00005a 9508                      	ret
                                  
                                  ;transmit line feed character
                                  newline:
-00004b e03a                      	ldi r19, 0x0a
-00004c 940e 003d                 	call serial_transmit
-00004e 9508                      	ret
+00005b e03a                      	ldi r19, 0x0a
+00005c 940e 004d                 	call serial_transmit
+00005e 9508                      	ret
                                  
                                  ;converts denary string in stack to integer in r19
                                  process_number:
-00004f 909f                      	pop r9 ;pop return pointer
-000050 90af                      	pop r10
-000051 e300                      	ldi r16, 0x30 ;ASCII code of 0
-000052 e011                      	ldi r17, 1 ;digit multiplier
-000053 e02a                      	ldi r18, 10 ;digit multiplier increased by 10 on each digit
-000054 e030                      	ldi r19, 0 ;initialise r19 to 0
+00005f 909f                      	pop r9 ;pop return pointer
+000060 90af                      	pop r10
+000061 e300                      	ldi r16, 0x30 ;ASCII code of 0
+000062 e011                      	ldi r17, 1 ;digit multiplier
+000063 e02a                      	ldi r18, 10 ;digit multiplier increased by 10 on each digit
+000064 e030                      	ldi r19, 0 ;initialise r19 to 0
                                  process_number_loop:
-000055 90ff                      	pop r15 ;get next char
-000056 20ff                      	tst r15 ;if char is zero number has ended
-000057 f031                      	breq number_end_reached
-000058 1af0                      	sub r15, r16 ;subtract ASCII value of zero to get integer 0 - 9
-000059 9ef1                      	mul r15, r17 ;multiply by digit multiplier
-00005a 0d30                      	add r19, r0 ;add result to r19
-00005b 9f12                      	mul r17, r18 ;multiply digit multiplier by 10
-00005c 2d10                      	mov r17, r0
-00005d cff7                      	rjmp process_number_loop
+000065 90ff                      	pop r15 ;get next char
+000066 20ff                      	tst r15 ;if char is zero number has ended
+000067 f031                      	breq number_end_reached
+000068 1af0                      	sub r15, r16 ;subtract ASCII value of zero to get integer 0 - 9
+000069 9ef1                      	mul r15, r17 ;multiply by digit multiplier
+00006a 0d30                      	add r19, r0 ;add result to r19
+00006b 9f12                      	mul r17, r18 ;multiply digit multiplier by 10
+00006c 2d10                      	mov r17, r0
+00006d cff7                      	rjmp process_number_loop
                                  number_end_reached:
-00005e e000                      	ldi r16, 0 ;push 0 back to stack
-00005f 930f                      	push r16
-000060 92af                      	push r10 ;push return pointer
-000061 929f                      	push r9
-000062 9508                      	ret
+00006e e000                      	ldi r16, 0 ;push 0 back to stack
+00006f 930f                      	push r16
+000070 92af                      	push r10 ;push return pointer
+000071 929f                      	push r9
+000072 9508                      	ret
                                  
                                  ;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
                                  ;16-bit remainder stored in r7:r8
                                  divide:
-000063 e000                      	ldi r16, 0 ;i=0
-000064 e010                      	ldi r17, 0 ;zero for comparison
+000073 e000                      	ldi r16, 0 ;i=0
+000074 e010                      	ldi r17, 0 ;zero for comparison
                                  divideloop:
-000065 9503                      	inc r16 ;i+=1
-000066 940e 0074                 	call multiply8by16 ;i * div -> r9:r10:r11
-000068 143b                      	cp r3, r11 ;compare num and i*div
-000069 042a                      	cpc r2, r10
-00006a 0519                      	cpc r17, r9
-00006b f7c8                      	brsh divideloop;branch if num >= i*div
-00006c 950a                      	dec r16 ;i-=1
-00006d 940e 0074                 	call multiply8by16 ;i * div
-00006f 2c72                      	mov r7, r2 ;move num to r7:r8
-000070 2c83                      	mov r8, r3
-000071 188b                      	sub r8, r11 ;remainder = num - i * div
-000072 087a                      	sbc r7, r10
-000073 2e60                      	mov r6, r16 ;result = i
+000075 9503                      	inc r16 ;i+=1
+000076 940e 0084                 	call multiply8by16 ;i * div -> r9:r10:r11
+000078 143b                      	cp r3, r11 ;compare num and i*div
+000079 042a                      	cpc r2, r10
+00007a 0519                      	cpc r17, r9
+00007b f7c8                      	brsh divideloop;branch if num >= i*div
+00007c 950a                      	dec r16 ;i-=1
+00007d 940e 0084                 	call multiply8by16 ;i * div
+00007f 2c72                      	mov r7, r2 ;move num to r7:r8
+000080 2c83                      	mov r8, r3
+000081 188b                      	sub r8, r11 ;remainder = num - i * div
+000082 087a                      	sbc r7, r10
+000083 2e60                      	mov r6, r16 ;result = i
                                  	
                                  
                                  ;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r9:r10:r11
                                  multiply8by16:
-000074 9d05                      	mul r16, r5 ;multiply low byte
-000075 2cb0                      	mov r11, r0 ;copy result to r10:r11
-000076 2ca1                      	mov r10, r1 
-000077 9d04                      	mul r16, r4 ;multiply high byte
-000078 0ca0                      	add	r10, r0 ;add low byte to r10
-000079 e010                      	ldi r17, 0
-00007a 2e91                      	mov r9, r17
-00007b 1c91                      	adc r9, r1 ;add high byte to r9
-00007c 9508                      	ret
+000084 9d05                      	mul r16, r5 ;multiply low byte
+000085 2cb0                      	mov r11, r0 ;copy result to r10:r11
+000086 2ca1                      	mov r10, r1 
+000087 9d04                      	mul r16, r4 ;multiply high byte
+000088 0ca0                      	add	r10, r0 ;add low byte to r10
+000089 e010                      	ldi r17, 0
+00008a 2e91                      	mov r9, r17
+00008b 1c91                      	adc r9, r1 ;add high byte to r9
+00008c 9508                      	ret
 
 
 RESOURCE USE INFORMATION
@@ -1154,9 +1173,9 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   0 z  :   0 r0 :   5 r1 :   2 r2 :   3 r3 :   3 r4 :   2 
-r5 :   2 r6 :   1 r7 :   3 r8 :   3 r9 :   5 r10:   6 r11:   3 r12:   0 
-r13:   0 r14:   0 r15:   4 r16:  28 r17:  10 r18:   2 r19:  18 r20:   2 
+x  :   0 y  :   0 z  :   0 r0 :   5 r1 :   2 r2 :   4 r3 :   4 r4 :   3 
+r5 :   3 r6 :   2 r7 :   3 r8 :   4 r9 :   5 r10:   6 r11:   3 r12:   0 
+r13:   0 r14:   0 r15:   4 r16:  36 r17:  10 r18:   2 r19:  20 r20:   2 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
 Registers used: 18 out of 35 (51.4%)
@@ -1167,13 +1186,13 @@ andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0
 brcc  :   0 brcs  :   0 break :   0 breq  :   5 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   0 brpl  :   0 brsh  :   1 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :  13 cbi   :   0 cbr   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  16 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   2 
 cpi   :   4 cpse  :   0 dec   :   1 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   1 jmp   :   0 
-ld    :   0 ldd   :   0 ldi   :  17 lds   :   3 lpm   :   0 lsl   :   0 
-lsr   :   0 mov   :  15 movw  :   0 mul   :   5 muls  :   0 mulsu :   0 
+ld    :   0 ldd   :   0 ldi   :  21 lds   :   3 lpm   :   0 lsl   :   0 
+lsr   :   0 mov   :  21 movw  :   0 mul   :   5 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 pop   :   3 
 push  :   6 rcall :   0 ret   :   6 reti  :   0 rjmp  :   6 rol   :   0 
 ror   :   0 sbc   :   1 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
@@ -1186,7 +1205,7 @@ Instructions used: 24 out of 113 (21.2%)
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0000fa    250      0    250   32768   0.8%
+[.cseg] 0x000000 0x00011a    282      0    282   32768   0.9%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

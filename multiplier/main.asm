@@ -25,6 +25,23 @@ init:
 	mov r19, r8
 	call serial_transmit
 
+	;8-bit RESULT TEST
+	ldi r16, 0xea ;load 0xea60 into numerator
+	mov r2, r16
+	ldi r16, 0x60
+	mov r3, r16
+	ldi r16, 0x02 ;load 0x0226 into denominator
+	mov r4, r16
+	ldi r16, 0x26
+	mov r5, r16
+	call divide ;result is 0x6d and remainder is 0x32
+	mov r19, r6
+	call serial_transmit ;result = m
+	mov r19, r8
+	call serial_transmit ;remainder low byte = 2
+	;so overall expected result is '#(m2'
+
+
 start:
 	ldi r19, 0 ;push 0 to stack
 	push r19
