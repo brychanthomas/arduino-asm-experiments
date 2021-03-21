@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 19:54:15 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 20:34:59 2021
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
@@ -1044,6 +1044,7 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
 000030 9300 00c2                 	sts	0xc2, r16
 000032 9508                      	ret
                                  
+                                 
                                  ;transmit byte stored in r19 over serial
                                  serial_transmit:
 000033 9100 00c0                 	lds	r16, 0xc0
@@ -1052,6 +1053,7 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
                                  
 000037 9330 00c6                 	sts 0xc6, r19
 000039 9508                      	ret
+                                 
                                  
                                  ;wait for byte to be sent, store it in r19 and return
                                  serial_receive:
@@ -1062,11 +1064,13 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
 00003e 9130 00c6                 	lds r19, 0xc6 ;load value in USART I/O data register into r19
 000040 9508                      	ret
                                  
+                                 
                                  ;transmit line feed character
                                  newline:
 000041 e03a                      	ldi r19, 0x0a
 000042 940e 0033                 	call serial_transmit
 000044 9508                      	ret
+                                 
                                  
                                  ;converts denary string in stack to integer in r19
                                  process_number:
@@ -1093,6 +1097,7 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
 000057 929f                      	push r9
 000058 9508                      	ret
                                  
+                                 
                                  ;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
                                  ;16-bit remainder stored in r7:r8
                                  divide:
@@ -1113,7 +1118,7 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
 000068 087a                      	sbc r7, r10
 000069 2e60                      	mov r6, r16 ;result = i
 00006a 9508                      	ret
-                                 	
+                                 
                                  
                                  ;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r9:r10:r11
                                  multiply8by16:
@@ -1126,8 +1131,6 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
 000071 2e91                      	mov r9, r17
 000072 1c91                      	adc r9, r1 ;add high byte to r9
 000073 9508                      	ret
-                                 
-                                 multiply16by16:
                                  	
                                  
                                  ;prints 16-bit integer stored in r1:r0
@@ -1135,30 +1138,42 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
 000074 2c21                      	mov r2, r1 ;load value to be printed as numerator
 000075 2c30                      	mov r3, r0
 000076 e0f1                      	ldi ZH, high(powers_of_10<<1) ;load address of powers into Z
-000077 e0ec                      	ldi ZL, low(powers_of_10<<1)
+000077 e2e6                      	ldi ZL, low(powers_of_10<<1)
+000078 e010                      	ldi r17, 0 ;set leading zero flag to 0
                                  print_integer_loop:
-000078 9045                      	lpm r4, Z+ ;load divider
-000079 9055                      	lpm r5, Z+
-00007a 940e 0059                 	call divide
-00007c 2c27                      	mov r2, r7 ;numerator = remainder
-00007d 2c38                      	mov r3, r8
-00007e e330                      	ldi r19, 0x30 ;ASCII code of zero
-00007f 0d36                      	add r19, r6 ;add result to zero ASCII
-000080 940e 0033                 	call serial_transmit ;transmit character
-000082 2d05                      	mov r16, r5 ;if low byte of divisor is not 1, loop again
-000083 3001                      	cpi r16, 0x01
-000084 f799                      	brne print_integer_loop
-000085 9508                      	ret
+000079 9045                      	lpm r4, Z+ ;load divider
+00007a 9055                      	lpm r5, Z+
+00007b 931f                      	push r17
+00007c 940e 0059                 	call divide
+00007e 911f                      	pop r17
+00007f 2c27                      	mov r2, r7 ;next numerator = remainder
+000080 2c38                      	mov r3, r8
+000081 1516                      	cp r17, r6
+000082 f049                      	breq leading_zero
+000083 ef1f                      	ldi r17, 0xff
+000084 e330                      	ldi r19, 0x30 ;ASCII code of zero
+000085 0d36                      	add r19, r6 ;add result to zero ASCII
+000086 940e 0033                 	call serial_transmit ;transmit character
+000088 2d05                      	mov r16, r5 ;if low byte of divisor is not 1, loop again
+000089 3001                      	cpi r16, 0x01
+00008a f771                      	brne print_integer_loop
+00008b c006                      	rjmp print_integer_end
+                                 leading_zero:
+00008c 2d05                      	mov r16, r5 ;if low byte of divisor is not 1, loop again
+00008d 3001                      	cpi r16, 0x01
+00008e f751                      	brne print_integer_loop
+00008f e330                      	ldi r19, 0x30
+000090 940e 0033                 	call serial_transmit
+                                 print_integer_end:
+000092 9508                      	ret
                                  
                                  
-                                 
-                                 
-                                 powers_of_10: ;10000, 1000, 100, 10 and 1 as hexadecimal
-000086 1027
-000087 e803
-000088 6400
-000089 0a00
-00008a 0100                      	.db 0x27, 0x10, 0x03, 0xe8, 0x00, 0x64, 0x00, 0x0a, 0x00, 0x01
+                                 powers_of_10: ;10000, 1000, 100, 10 and 1 as 16-bit integers
+000093 1027
+000094 e803
+000095 6400
+000096 0a00
+000097 0100                      	.db 0x27, 0x10, 0x03, 0xe8, 0x00, 0x64, 0x00, 0x0a, 0x00, 0x01
                                  
                                  ;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
 
@@ -1179,8 +1194,8 @@ counted separately from r26..r31 here.
 
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :   2 r0 :   5 r1 :   3 r2 :   4 r3 :   4 r4 :   2 
-r5 :   3 r6 :   2 r7 :   3 r8 :   3 r9 :   5 r10:   6 r11:   3 r12:   0 
-r13:   0 r14:   0 r15:   4 r16:  22 r17:  10 r18:   2 r19:  18 r20:   2 
+r5 :   4 r6 :   3 r7 :   3 r8 :   3 r9 :   5 r10:   6 r11:   3 r12:   0 
+r13:   0 r14:   0 r15:   4 r16:  24 r17:  15 r18:   2 r19:  19 r20:   2 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   1 r31:   1 
 Registers used: 21 out of 35 (60.0%)
@@ -1188,18 +1203,18 @@ Registers used: 21 out of 35 (60.0%)
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   1 add   :   3 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   5 brge  :   0 brhc  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :   6 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   1 brpl  :   0 brsh  :   1 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :  15 cbi   :   0 cbr   :   0 
+brne  :   2 brpl  :   0 brsh  :   1 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  16 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   2 
-cpi   :   5 cpse  :   0 dec   :   1 eor   :   0 fmul  :   0 fmuls :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   2 cpc   :   2 
+cpi   :   6 cpse  :   0 dec   :   1 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   1 jmp   :   0 
-ld    :   0 ldd   :   0 ldi   :  17 lds   :   3 lpm   :   2 lsl   :   0 
-lsr   :   0 mov   :  13 movw  :   0 mul   :   5 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 pop   :   3 
-push  :   6 rcall :   0 ret   :   8 reti  :   0 rjmp  :   6 rol   :   0 
+ld    :   0 ldd   :   0 ldi   :  20 lds   :   3 lpm   :   2 lsl   :   0 
+lsr   :   0 mov   :  14 movw  :   0 mul   :   5 muls  :   0 mulsu :   0 
+neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 pop   :   4 
+push  :   7 rcall :   0 ret   :   8 reti  :   0 rjmp  :   7 rol   :   0 
 ror   :   0 sbc   :   1 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   2 sec   :   0 seh   :   0 
 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
@@ -1210,7 +1225,7 @@ Instructions used: 26 out of 113 (23.0%)
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000116    268     10    278   32768   0.8%
+[.cseg] 0x000000 0x000130    294     10    304   32768   0.9%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

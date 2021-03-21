@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 19:54:15 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 20:34:59 2021
 
 
 EQU  SIGNATURE_000 0000001e
@@ -712,6 +712,7 @@ CSEG number_end_reached 00000054
 CSEG divide       00000059
 CSEG divideloop   0000005b
 CSEG multiply8by16 0000006b
-CSEG multiply16by16 00000074
-CSEG powers_of_10 00000086
-CSEG print_integer_loop 00000078
+CSEG powers_of_10 00000093
+CSEG print_integer_loop 00000079
+CSEG leading_zero 0000008c
+CSEG print_integer_end 00000092

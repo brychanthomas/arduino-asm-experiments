@@ -58,6 +58,7 @@ serial_init:
 	sts	0xc2, r16
 	ret
 
+
 ;transmit byte stored in r19 over serial
 serial_transmit:
 	lds	r16, 0xc0
@@ -66,6 +67,7 @@ serial_transmit:
 
 	sts 0xc6, r19
 	ret
+
 
 ;wait for byte to be sent, store it in r19 and return
 serial_receive:
@@ -76,11 +78,13 @@ serial_receive:
 	lds r19, 0xc6 ;load value in USART I/O data register into r19
 	ret
 
+
 ;transmit line feed character
 newline:
 	ldi r19, 0x0a
 	call serial_transmit
 	ret
+
 
 ;converts denary string in stack to integer in r19
 process_number:
@@ -107,6 +111,7 @@ number_end_reached:
 	push r9
 	ret
 
+
 ;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
 ;16-bit remainder stored in r7:r8
 divide:
@@ -128,6 +133,7 @@ divideloop:
 	mov r6, r16 ;result = i
 	ret
 
+
 ;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r9:r10:r11
 multiply8by16:
 	mul r16, r5 ;multiply low byte
@@ -140,24 +146,39 @@ multiply8by16:
 	adc r9, r1 ;add high byte to r9
 	ret
 	
+
 ;prints 16-bit integer stored in r1:r0
 print_integer:
 	mov r2, r1 ;load value to be printed as numerator
 	mov r3, r0
 	ldi ZH, high(powers_of_10<<1) ;load address of powers into Z
 	ldi ZL, low(powers_of_10<<1)
+	ldi r17, 0 ;set leading zero flag to 0
 print_integer_loop:
 	lpm r4, Z+ ;load divider
 	lpm r5, Z+
+	push r17
 	call divide
-	mov r2, r7 ;numerator = remainder
+	pop r17
+	mov r2, r7 ;next numerator = remainder
 	mov r3, r8
+	cp r17, r6 ;if r17 = r6, go to leading_zero
+	breq leading_zero
+	ldi r17, 0xff ;otherwise set r17 to 0xff to indicate no more leading zeros
 	ldi r19, 0x30 ;ASCII code of zero
 	add r19, r6 ;add result to zero ASCII
 	call serial_transmit ;transmit character
 	mov r16, r5 ;if low byte of divisor is not 1, loop again
 	cpi r16, 0x01
 	brne print_integer_loop
+	rjmp print_integer_end
+leading_zero:
+	mov r16, r5 ;if low byte of divisor is not 1, loop again
+	cpi r16, 0x01
+	brne print_integer_loop
+	ldi r19, 0x30 ;if last digit is zero, print it
+	call serial_transmit
+print_integer_end:
 	ret
 
 
