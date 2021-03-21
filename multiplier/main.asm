@@ -7,19 +7,24 @@
 
 init:
 	call serial_init
-	;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r6:r7:r8
-	ldi r16, 0xf2 ;load 62145 into r4:r5
+	;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
+	;16-bit remainder stored in r7:r8
+
+	;16-bit REMAINDER TEST
+	ldi r16, 0x4a ;load 0x4a38 into numerator
+	mov r2, r16
+	ldi r16, 0x38
+	mov r3, r16
+	ldi r16, 0x27 ;load 0x2710 into denominator
 	mov r4, r16
-	ldi r16, 0xc1
+	ldi r16, 0x10
 	mov r5, r16
-	ldi r16, 0x24 ;load 36 into r16
-	call multiply ;multiply r16 by r4:r5. Result should be 2237220 or 0x222324, which translates to ASCII "#$
-	mov r19, r6
-	call serial_transmit
+	call divide ;remainder of 0x4a38 / 0x2710 is 0x2328
 	mov r19, r7
-	call serial_transmit
+	call serial_transmit ;should print #(
 	mov r19, r8
 	call serial_transmit
+
 start:
 	ldi r19, 0 ;push 0 to stack
 	push r19
@@ -120,17 +125,31 @@ number_end_reached:
 ;16-bit remainder stored in r7:r8
 divide:
 	ldi r16, 0 ;i=0
+	ldi r17, 0 ;zero for comparison
 divideloop:
+	inc r16 ;i+=1
+	call multiply8by16 ;i * div -> r9:r10:r11
+	cp r3, r11 ;compare num and i*div
+	cpc r2, r10
+	cpc r17, r9
+	brsh divideloop;branch if num >= i*div
+	dec r16 ;i-=1
+	call multiply8by16 ;i * div
+	mov r7, r2 ;move num to r7:r8
+	mov r8, r3
+	sub r8, r11 ;remainder = num - i * div
+	sbc r7, r10
+	mov r6, r16 ;result = i
 	
 
-;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r6:r7:r8
-multiply:
+;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r9:r10:r11
+multiply8by16:
 	mul r16, r5 ;multiply low byte
-	mov r8, r0 ;copy result to r7:r8
-	mov r7, r1 
+	mov r11, r0 ;copy result to r10:r11
+	mov r10, r1 
 	mul r16, r4 ;multiply high byte
-	add	r7, r0 ;add low byte to r7
+	add	r10, r0 ;add low byte to r10
 	ldi r17, 0
-	mov r6, r17
-	adc r6, r1 ;add high byte to r6
+	mov r9, r17
+	adc r9, r1 ;add high byte to r9
 	ret

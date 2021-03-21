@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 12:57:32 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 13:43:59 2021
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
@@ -993,19 +993,22 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
                                  
                                  init:
 000000 940e 0030                 	call serial_init
-                                 	;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r6:r7:r8
-000002 ef02                      	ldi r16, 0xf2 ;load 62145 into r4:r5
-000003 2e40                      	mov r4, r16
-000004 ec01                      	ldi r16, 0xc1
-000005 2e50                      	mov r5, r16
-000006 e204                      	ldi r16, 0x24 ;load 36 into r16
-000007 940e 0064                 	call multiply ;multiply r16 by r4:r5. Result should be 2237220 or 0x222324, which translates to ASCII '#$%'
-000009 2d36                      	mov r19, r6
-00000a 940e 003d                 	call serial_transmit
+                                 	;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
+                                 	;16-bit remainder stored in r7:r8
+000002 e40a                      	ldi r16, 0x4a ;load 0x4a38 into numerator
+000003 2e20                      	mov r2, r16
+000004 e308                      	ldi r16, 0x38
+000005 2e30                      	mov r3, r16
+000006 e207                      	ldi r16, 0x27 ;load 0x2710 into denominator
+000007 2e40                      	mov r4, r16
+000008 e100                      	ldi r16, 0x10
+000009 2e50                      	mov r5, r16
+00000a 940e 0063                 	call divide ;remainder of 0x4a38 / 0x2710 is 0x2328
 00000c 2d37                      	mov r19, r7
-00000d 940e 003d                 	call serial_transmit
+00000d 940e 003d                 	call serial_transmit ;should print #(
 00000f 2d38                      	mov r19, r8
 000010 940e 003d                 	call serial_transmit
+                                 
                                  start:
 000012 e030                      	ldi r19, 0 ;push 0 to stack
 000013 933f                      	push r19
@@ -1106,20 +1109,34 @@ AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\
                                  ;16-bit remainder stored in r7:r8
                                  divide:
 000063 e000                      	ldi r16, 0 ;i=0
+000064 e010                      	ldi r17, 0 ;zero for comparison
                                  divideloop:
+000065 9503                      	inc r16 ;i+=1
+000066 940e 0074                 	call multiply8by16 ;i * div -> r9:r10:r11
+000068 143b                      	cp r3, r11 ;compare num and i*div
+000069 042a                      	cpc r2, r10
+00006a 0519                      	cpc r17, r9
+00006b f7c8                      	brsh divideloop;branch if num >= i*div
+00006c 950a                      	dec r16 ;i-=1
+00006d 940e 0074                 	call multiply8by16 ;i * div
+00006f 2c72                      	mov r7, r2 ;move num to r7:r8
+000070 2c83                      	mov r8, r3
+000071 188b                      	sub r8, r11 ;remainder = num - i * div
+000072 087a                      	sbc r7, r10
+000073 2e60                      	mov r6, r16 ;result = i
                                  	
                                  
-                                 ;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r6:r7:r8
-                                 multiply:
-000064 9d05                      	mul r16, r5 ;multiply low byte
-000065 2c80                      	mov r8, r0 ;copy result to r7:r8
-000066 2c71                      	mov r7, r1 
-000067 9d04                      	mul r16, r4 ;multiply high byte
-000068 0c70                      	add	r7, r0 ;add low byte to r7
-000069 e010                      	ldi r17, 0
-00006a 2e61                      	mov r6, r17
-00006b 1c61                      	adc r6, r1 ;add high byte to r6
-00006c 9508                      	ret
+                                 ;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r9:r10:r11
+                                 multiply8by16:
+000074 9d05                      	mul r16, r5 ;multiply low byte
+000075 2cb0                      	mov r11, r0 ;copy result to r10:r11
+000076 2ca1                      	mov r10, r1 
+000077 9d04                      	mul r16, r4 ;multiply high byte
+000078 0ca0                      	add	r10, r0 ;add low byte to r10
+000079 e010                      	ldi r17, 0
+00007a 2e91                      	mov r9, r17
+00007b 1c91                      	adc r9, r1 ;add high byte to r9
+00007c 9508                      	ret
 
 
 RESOURCE USE INFORMATION
@@ -1137,39 +1154,39 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   0 z  :   0 r0 :   5 r1 :   2 r2 :   0 r3 :   0 r4 :   2 
-r5 :   2 r6 :   3 r7 :   3 r8 :   2 r9 :   2 r10:   2 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   4 r16:  22 r17:   8 r18:   2 r19:  19 r20:   2 
+x  :   0 y  :   0 z  :   0 r0 :   5 r1 :   2 r2 :   3 r3 :   3 r4 :   2 
+r5 :   2 r6 :   1 r7 :   3 r8 :   3 r9 :   5 r10:   6 r11:   3 r12:   0 
+r13:   0 r14:   0 r15:   4 r16:  28 r17:  10 r18:   2 r19:  18 r20:   2 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
-Registers used: 15 out of 35 (42.9%)
+Registers used: 18 out of 35 (51.4%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   1 add   :   2 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   5 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   0 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :  12 cbi   :   0 cbr   :   0 
+brne  :   0 brpl  :   0 brsh  :   1 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  13 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   4 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   0 
-ld    :   0 ldd   :   0 ldi   :  15 lds   :   3 lpm   :   0 lsl   :   0 
-lsr   :   0 mov   :  11 movw  :   0 mul   :   5 muls  :   0 mulsu :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   2 
+cpi   :   4 cpse  :   0 dec   :   1 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   1 jmp   :   0 
+ld    :   0 ldd   :   0 ldi   :  17 lds   :   3 lpm   :   0 lsl   :   0 
+lsr   :   0 mov   :  15 movw  :   0 mul   :   5 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 pop   :   3 
 push  :   6 rcall :   0 ret   :   6 reti  :   0 rjmp  :   6 rol   :   0 
-ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
+ror   :   0 sbc   :   1 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   2 sec   :   0 seh   :   0 
 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   5 
-sub   :   1 subi  :   0 swap  :   0 tst   :   1 wdr   :   0 
-Instructions used: 18 out of 113 (15.9%)
+sub   :   2 subi  :   0 swap  :   0 tst   :   1 wdr   :   0 
+Instructions used: 24 out of 113 (21.2%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0000da    218      0    218   32768   0.7%
+[.cseg] 0x000000 0x0000fa    250      0    250   32768   0.8%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
