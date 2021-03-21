@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 17:45:08 2021
+AVRASM ver. 2.2.8  C:\Users\Brychan\Desktop\_Programming\Arduino asm\multiplier\main.asm Sun Mar 21 19:54:15 2021
 
 
 EQU  SIGNATURE_000 0000001e
@@ -696,21 +696,22 @@ EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
 CSEG init         00000000
-CSEG serial_init  00000043
-CSEG divide       00000076
-CSEG serial_transmit 00000050
-CSEG start        00000022
-CSEG get_first_num 00000024
-CSEG serial_receive 00000057
-CSEG first_num_finished 0000002c
-CSEG process_number 00000062
-CSEG get_second_num 00000031
-CSEG second_num_finished 00000039
-CSEG print_integer 00000091
-CSEG newline      0000005e
-CSEG process_number_loop 00000068
-CSEG number_end_reached 00000071
-CSEG divideloop   00000078
-CSEG multiply8by16 00000088
-CSEG powers_of_10 000000a3
-CSEG print_integer_loop 00000095
+CSEG serial_init  00000026
+CSEG start        00000002
+CSEG serial_transmit 00000033
+CSEG get_first_num 00000007
+CSEG serial_receive 0000003a
+CSEG first_num_finished 00000011
+CSEG process_number 00000045
+CSEG get_second_num 00000014
+CSEG second_num_finished 0000001e
+CSEG print_integer 00000074
+CSEG newline      00000041
+CSEG process_number_loop 0000004b
+CSEG number_end_reached 00000054
+CSEG divide       00000059
+CSEG divideloop   0000005b
+CSEG multiply8by16 0000006b
+CSEG multiply16by16 00000074
+CSEG powers_of_10 00000086
+CSEG print_integer_loop 00000078

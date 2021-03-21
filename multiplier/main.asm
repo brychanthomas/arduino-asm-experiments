@@ -7,68 +7,36 @@
 
 init:
 	call serial_init
-	;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
-	;16-bit remainder stored in r7:r8
-
-	;16-bit REMAINDER TEST
-	ldi r16, 0x4a ;load 0x4a38 into numerator
-	mov r2, r16
-	ldi r16, 0x38
-	mov r3, r16
-	ldi r16, 0x27 ;load 0x2710 into denominator
-	mov r4, r16
-	ldi r16, 0x10
-	mov r5, r16
-	call divide ;remainder of 0x4a38 / 0x2710 is 0x2328
-	mov r19, r7
-	call serial_transmit ;should print #(
-	mov r19, r8
-	call serial_transmit
-
-	;8-bit RESULT TEST
-	ldi r16, 0xea ;load 0xea60 into numerator
-	mov r2, r16
-	ldi r16, 0x60
-	mov r3, r16
-	ldi r16, 0x02 ;load 0x0226 into denominator
-	mov r4, r16
-	ldi r16, 0x26
-	mov r5, r16
-	call divide ;result is 0x6d and remainder is 0x32
-	mov r19, r6
-	call serial_transmit ;result = m
-	mov r19, r8
-	call serial_transmit ;remainder low byte = 2
-	;so overall expected result is '#(m2'
-
 
 start:
 	ldi r19, 0 ;push 0 to stack
 	push r19
+	ldi r19, 0x3e ;print '>' character
+	call serial_transmit 
 get_first_num:
     call serial_receive
-	cpi r19, 0x2a ;* char
+	call serial_transmit
+	cpi r19, 0x2a ;on * char goto first_num_finished
 	breq first_num_finished
-	cpi r19, 0x20 ;space
+	cpi r19, 0x20 ;ignore spaces
 	breq get_first_num
 	push r19
 	rjmp get_first_num
 first_num_finished:
-	call process_number
-	call serial_transmit
+	call process_number ;process number on stack
 	mov r20, r19
 get_second_num:
 	call serial_receive
-	cpi r19, 0x0a ;newline char
+	call serial_transmit
+	cpi r19, 0x0a ;on newline char goto second_num_finished
 	breq second_num_finished
-	cpi r19, 0x20 ;space
+	cpi r19, 0x20 ;ignore spaces
 	breq get_second_num
 	push r19
 	rjmp get_second_num
 second_num_finished:
-	call process_number
-	call serial_transmit
-	mul r19, r20
+	call process_number ;process number on stack
+	mul r19, r20 ;multiply the two numbers
 	call print_integer
 	call newline
 	rjmp start
@@ -159,7 +127,6 @@ divideloop:
 	sbc r7, r10
 	mov r6, r16 ;result = i
 	ret
-	
 
 ;multiply 8-bit number stored in r16 with 16-bit number in r4:r5. Result stored in r9:r10:r11
 multiply8by16:
@@ -172,7 +139,7 @@ multiply8by16:
 	mov r9, r17
 	adc r9, r1 ;add high byte to r9
 	ret
-
+	
 ;prints 16-bit integer stored in r1:r0
 print_integer:
 	mov r2, r1 ;load value to be printed as numerator
@@ -194,9 +161,7 @@ print_integer_loop:
 	ret
 
 
-
-
-powers_of_10: ;10000, 1000, 100, 10 and 1 as hexadecimal
+powers_of_10: ;10000, 1000, 100, 10 and 1 as 16-bit integers
 	.db 0x27, 0x10, 0x03, 0xe8, 0x00, 0x64, 0x00, 0x0a, 0x00, 0x01
 
 ;divides two 16-bit numbers stored in r2:r3 (num) and r4:r5 (div). 8-bit result stored in r6 and
