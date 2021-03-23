@@ -16,7 +16,7 @@ start:
 	ldi r19, 0x3e ;print '>'
 	call serial_transmit
 loop:
-    call serial_receive ;receive a character
+	call serial_receive ;receive a character
 	call serial_transmit ;print character
 	cpi r19, 0x0a
 	breq input_finished ;if it's a newline jump to input_finished
